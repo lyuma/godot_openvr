@@ -9,7 +9,7 @@ header = open('openvr.h', newline='\n').read()
 
 annoyingMacroPattern = re.compile(r'#define\s+(\w+).*VR_CLANG_ATTR.*')
 fullClassPattern = re.compile(r'^([^\S\n]*)class\s+(\w+).*?\{.*?\};', re.MULTILINE | re.DOTALL)
-virtualPattern = re.compile(r'([^\S\n]*)virtual\s(.*?)(\w+)(\((.+?\s*(sizeof\s*\(\s*.*?\s*\)\s*)?,\s*)*.*?\s*(sizeof\s*\(\s*.*?\s*\)\s*)?\))\s*=\s*0\s*;[^\S\n]*', re.MULTILINE)
+virtualPattern = re.compile(r'([^\S\n]*)virtual\s(.*?)(\w+)(\((.+?\s*(sizeof\s*\(\s*.*?\s*\)\s*)?,\s*)*.*?\s*(sizeof\s*\(\s*.*?\s*\)\s*)?\))(?:\s*const)?\s*=\s*0\s*;[^\S\n]*', re.MULTILINE)
 optionalParamPattern = re.compile(r'\s*=\s*(sizeof\s*\(\s*.*?\s*\)\s*)?[^,)]+')
 versionPattern = re.compile(r'\s*static\s*const\s*char\s*\*\s*const\s*IVR\w+\s*=\s*\"IVR\w+\";')
 
