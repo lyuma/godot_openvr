@@ -5,7 +5,7 @@ import sys
 import re
 import io
 
-header = open('openvr.h', newline='\n').read()
+header = open('openvr/headers/openvr.h', newline='\n').read()
 
 annoyingMacroPattern = re.compile(r'#define\s+(\w+).*VR_CLANG_ATTR.*')
 fullClassPattern = re.compile(r'^([^\S\n]*)class\s+(\w+).*?\{.*?\};', re.MULTILINE | re.DOTALL)
@@ -59,4 +59,4 @@ for match in fullClassPattern.finditer(header):
     
     newHeader = newHeader.replace(fullClass, table + newClass)
 
-open('openvr_mingw.hpp', 'w', newline='\n').write(newHeader)
+open('openvr.h', 'w', newline='\n').write(newHeader)
