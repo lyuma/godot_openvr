@@ -74,21 +74,31 @@ if env['platform'] == 'windows':
     elif host_platform == 'linux' or host_platform == 'osx':
         # Cross-compilation using MinGW
         if env['bits'] == '64':
-            env['CXX'] = 'x86_64-w64-mingw32-g++'
-            env['AR'] = "x86_64-w64-mingw32-ar"
-            env['RANLIB'] = "x86_64-w64-mingw32-ranlib"
-            env['LINK'] = "x86_64-w64-mingw32-g++"
+            mingw_prefix = 'x86_64-w64-mingw32-'
         elif env['bits'] == '32':
-            env['CXX'] = 'i686-w64-mingw32-g++'
-            env['AR'] = "i686-w64-mingw32-ar"
-            env['RANLIB'] = "i686-w64-mingw32-ranlib"
-            env['LINK'] = "i686-w64-mingw32-g++"
+            mingw_prefix = 'i686-w64-mingw32-'
+        if env["use_llvm"]:
+            env["CC"] = mingw_prefix + "clang"
+            env["AS"] = mingw_prefix + "as"
+            env["CXX"] = mingw_prefix + "clang++"
+            env["AR"] = mingw_prefix + "ar"
+            env["RANLIB"] = mingw_prefix + "ranlib"
+            env["LINK"] = mingw_prefix + "clang++"
+            env.Append(LINKFLAGS=["-Wl,-pdb="])
+            env.Append(CCFLAGS=["-gcodeview"])
+        else:
+            env["CC"] = mingw_prefix + "gcc"
+            env["AS"] = mingw_prefix + "as"
+            env["CXX"] = mingw_prefix + "g++"
+            env["AR"] = mingw_prefix + "gcc-ar"
+            env["RANLIB"] = mingw_prefix + "gcc-ranlib"
+            env["LINK"] = mingw_prefix + "g++"
+        env["SHCCFLAGS"] = '$CCFLAGS'
 
         # Native or cross-compilation using MinGW
         env.Append(CCFLAGS=['-g', '-O3', '-std=c++14', '-Wwrite-strings'])
         env.Append(LINKFLAGS=[
             '--static',
-            '-Wl,--no-undefined',
             '-static-libgcc',
             '-static-libstdc++',
         ])
@@ -147,6 +157,8 @@ if (os.name == "nt" and os.getenv("VCINSTALLDIR")):
     env.Append(LINKFLAGS=['openvr_api.lib'])
 elif env['platform'] == "osx":
     env.Append(LINKFLAGS = ['-F' + env['openvr_path'] + 'bin/osx64', '-framework', 'OpenVR'])
+elif env['platform'] == "windows" and env['use_llvm']:
+    env.Append(LINKFLAGS=[env['openvr_path'] + 'lib/' + platform_dir + '/openvr_api.lib'])
 else:
     env.Append(LIBPATH=[env['openvr_path'] + 'lib/' + platform_dir])
     env.Append(LIBS=['openvr_api'])
